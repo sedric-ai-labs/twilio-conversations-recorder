@@ -1,31 +1,43 @@
-# Your custom Twilio Flex Plugin
+# Sedric's Flex Plugin
 
-Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
+Integrate your Twilio account with Sedric using a dedicated plugin
 
 ## Setup
 
 Make sure you have [Node.js](https://nodejs.org) as well as [`npm`](https://npmjs.com). We support Node >= 10.12 (and recommend the _even_ versions of Node). Afterwards, install the dependencies by running `npm install`:
 
-```bash
-cd 
+Follow these steps:
 
-# If you use npm
-npm install
-```
+1. Install the dependencies via npm
+    ```
+    npm install
+    ```
 
-Next, please install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart) by running:
+2. Please install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/quickstart) by running:
+    ```
+    brew tap twilio/brew && brew install twilio
+    ```
+3. Install the [Flex Plugin extension](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) for the Twilio CLI:
 
-```bash
-brew tap twilio/brew && brew install twilio
-```
+    ```
+    twilio plugins:install @twilio-labs/plugin-flex
+    ```
+4. Fetch your accound SID and token and login to you Twilio account via CLI
+    
+    ![alt text](docs/token.png)
 
-Finally, install the [Flex Plugin extension](https://github.com/twilio-labs/plugin-flex/tree/v1-beta) for the Twilio CLI:
+    ```
+    twilio login
+    ```
+5. Deploy the plugin using the following command
+    ```
+    twilio flex:plugins:deploy --changelog "Sedric's Plugin" --version=0.0.1     
+    ```
+6. Run the auto-generated command to enable the plugin in the account
+    
+    ![alt text](docs/autogeneraed_command.png)
+    
+7. Validate that plugin is enabled in the account
 
-```bash
-twilio plugins:install @twilio-labs/plugin-flex
-```
-
-## Development
-
-Run `twilio flex:plugins --help` to see all the commands we currently support. For further details on Flex Plugins refer to our documentation on the [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins/cli) page.
-
+    ![alt text](docs/plugin_1.png)
+    ![alt text](docs/plugin_2.png)
