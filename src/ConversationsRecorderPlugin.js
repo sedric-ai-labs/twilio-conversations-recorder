@@ -32,7 +32,7 @@ export default class ConversationsRecorderPlugin extends FlexPlugin {
         called = task.attributes.called.replace("+", "@");
       }
       
-      const callbackURL = `https://us-central1-sedric-dev.cloudfunctions.net/flex_api?workerSID=${workerSID}&direction=${direction}&called=${called}&caller=${caller}`;
+      const callbackURL = `https://us-central1-sedric-prod.cloudfunctions.net/flex_api?workerSID=${workerSID}&direction=${direction}&called=${called}&caller=${caller}`;
       payload.conferenceOptions.recordingStatusCallback = callbackURL;
     });
   }
