@@ -6,10 +6,11 @@ Integrate your Twilio account with Sedric using a dedicated plugin
 
 Make sure you have [Node.js](https://nodejs.org) as well as [`npm`](https://npmjs.com). We support Node >= 10.12 (and recommend the _even_ versions of Node). Afterwards, install the dependencies by running `npm install`:
 
-Follow these steps:
+cd into the plugin directory and follow these steps:
 
 1. Install the dependencies via npm
     ```
+    cd
     npm install
     ```
 
