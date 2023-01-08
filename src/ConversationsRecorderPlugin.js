@@ -17,12 +17,20 @@ export default class ConversationsRecorderPlugin extends FlexPlugin {
   async init(flex, manager) {
     flex.Actions.addListener("beforeAcceptTask", (payload) => {
       payload.conferenceOptions.record = 'true';
-      
-      const task = payload.task._task
+
+      const task = payload.task._task;
       const workerSID = task._worker.sid;
       const direction = task.attributes.direction;
-      const caller = task.attributes.caller.replace("+", "@");
-      const called = task.attributes.caller.replace("+", "@");
+
+      let caller = "";
+      let called = "";
+      if (direction === "outbound") {
+        caller = task.attributes.from.replace("+", "@");
+        called = task.attributes.outbound_to.replace("+", "@");
+      } else {
+        caller = task.attributes.caller.replace("+", "@");
+        called = task.attributes.called.replace("+", "@");
+      }
       
       const callbackURL = `https://us-central1-sedric-dev.cloudfunctions.net/flex_api?workerSID=${workerSID}&direction=${direction}&called=${called}&caller=${caller}`;
       payload.conferenceOptions.recordingStatusCallback = callbackURL;
