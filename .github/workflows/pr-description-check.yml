@@ -1,0 +1,88 @@
+name: PR Description Check
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    branches: [ master ]
+
+jobs:
+  check-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description Requirements
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            
+            // Validation checks
+            const mondayLinkPattern = /https:\/\/sedric-force\.monday\.com\//;
+            const placeholderPattern = /## Changes\s*\n_{PLACEHOLDER}_/;
+            const emptyLinePattern = /## Changes\s*\n\s*\n/;
+            
+            // Track validation errors
+            const errors = [];
+            
+            // Check Monday.com link
+            if (!mondayLinkPattern.test(body)) {
+              errors.push('Missing required Monday.com link (https://sedric-force.monday.com/)');
+            }
+
+            // Check Changes section
+            if (placeholderPattern.test(body)) {
+              errors.push('Changes section cannot contain only _{PLACEHOLDER}_. Please provide a description!');
+            }
+            if (emptyLinePattern.test(body)) {
+              errors.push('Changes section cannot be empty. Please provide a description!');
+            }
+
+            // Find existing bot comments
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('PR Description Validation Failed')
+            );
+            
+            if (errors.length > 0) {
+              const errorMessage = `
+              ❌ PR Description Validation Failed
+            
+              ${errors.map(error => `- ${error}`).join('\n')}
+            
+              Please update your PR description to address these issues.
+              `;
+            
+              // Update or create comment
+              if (botComment) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: errorMessage
+                });
+              } else {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  body: errorMessage
+                });
+              }
+            
+              core.setFailed('PR description validation failed');
+            } else {
+              // Remove error comment if it exists and all checks pass
+              if (botComment) {
+                await github.rest.issues.deleteComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id
+                });
+              }
+            }
